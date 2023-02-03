@@ -1,0 +1,11 @@
+plugins {
+    id "java-library"
+}
+
+dependencies {
+    compileOnly "org.projectlombok:lombok"
+    testCompileOnly "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}
+

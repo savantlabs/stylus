@@ -1,0 +1,63 @@
+plugins {
+  id "com.adarshr.test-logger" version '2.1.1' apply false
+  id "com.diffplug.spotless" version '6.5.2' apply false
+  id "java"
+}
+
+group = 'io.savantlabs.stylus'
+version = '0.0.1-SNAPSHOT'
+
+allprojects {
+  repositories {
+    if (System.env.CI != "true") {
+      mavenLocal()
+    }
+    mavenCentral()
+  }
+}
+
+subprojects {
+
+  apply plugin: "com.adarshr.test-logger"
+
+  group = this.group
+  version = this.version
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+
+  if ("bom" == project.name) {
+    // no logic
+  } else {
+    apply plugin: 'stylus.lombok'
+    apply plugin: 'stylus.spotless'
+    if ("api" == project.name) {
+      apply plugin: 'java'
+    } else if ("test" == project.name) {
+      apply plugin: 'java-library'
+    } else {
+      apply plugin: 'stylus.java-library'
+      dependencies {
+        implementation platform(project(":bom"))
+      }
+    }
+    test {
+      jvmArgs = [
+              "-Duser.timezone=UTC",
+              "--add-opens=java.base/java.nio=ALL-UNNAMED"
+      ]
+      useJUnitPlatform {
+        excludeTags 'manual'
+      }
+      maxParallelForks = Runtime.runtime.availableProcessors()
+    }
+
+    task fullTest(type: Test) {
+      jvmArgs = [
+              "-Duser.timezone=UTC",
+              "--add-opens=java.base/java.nio=ALL-UNNAMED"
+      ]
+      useJUnitPlatform()
+    }
+  }
+
+}

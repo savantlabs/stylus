@@ -1,0 +1,11 @@
+rootProject.name = 'stylus'
+
+include(
+        'api',
+        'bom',
+        'client',
+        'core',
+        'intf',
+        'sdk',
+        'test'
+)

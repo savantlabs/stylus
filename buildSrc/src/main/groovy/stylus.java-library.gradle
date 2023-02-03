@@ -1,0 +1,31 @@
+plugins {
+    id "stylus.spotless"
+    id "stylus.lombok"
+    id "maven-publish"
+    id "java-library"
+}
+
+dependencies {
+    // test dependencies
+    testImplementation project(":test")
+    // Use JUnit Jupiter Engine
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+}
+
+publishing {
+    var artifact = "monet-" + project.name
+    publications {
+        maven(MavenPublication) {
+            groupId = this.group
+            artifactId = artifact
+            version = this.version
+            from project.components.java
+        }
+    }
+}
+
+task bp {
+    dependsOn clean, assemble, publishToMavenLocal
+    assemble.mustRunAfter clean
+    publishToMavenLocal.mustRunAfter assemble
+}

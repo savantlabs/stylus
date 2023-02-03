@@ -1,0 +1,13 @@
+plugins {}
+
+dependencies {
+    implementation platform(project(":bom"))
+    api "org.slf4j:slf4j-api"
+    api "org.junit.jupiter:junit-jupiter:5.7.2"
+    api "org.assertj:assertj-core:3.20.2"
+    api "io.opentelemetry:opentelemetry-sdk"
+
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
+    // Use JUnit Jupiter Engine
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+}

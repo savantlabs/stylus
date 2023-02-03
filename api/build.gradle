@@ -1,0 +1,28 @@
+plugins {
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
+    id 'org.graalvm.buildtools.native' version '0.9.19'
+}
+
+dependencies {
+    implementation platform(project(":bom"))
+    implementation project(":core")
+    implementation project(":intf")
+    implementation project(":sdk")
+
+    // spring-boot
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    // metrics
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // otel
+    implementation "io.opentelemetry:opentelemetry-api"
+
+    // test dependencies
+    testImplementation project(":test")
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testAnnotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+}
