@@ -20,11 +20,11 @@ as the python pacakge manager.
     ```
 3. Install virtual environment
     ```
-    $ conda update -f environment.yml -f dev-environment.yml -p venv
+    $ conda env update -f environment.yml -f dev-environment.yml -p venv
     ```
    or, if you are using `mamba`:
     ```
-    $ mamba update -f environment.yml -f dev-environment.yml -p venv
+    $ mamba env update -f environment.yml -f dev-environment.yml -p venv
     ```
 4. Activate the virtual environment
     ```
@@ -33,7 +33,7 @@ as the python pacakge manager.
     or, if you are using `mamba`:
     ```
     $ mamba activate ./venv
-    ```   
+    ```
 
 When you want to add/upgrade packages **for release**
 1. Update the `environment.yml` or `dev-environment.yml` file.
@@ -42,20 +42,16 @@ When you want to add/upgrade packages **for release**
    $ conda deactivate
    ```
    or, if you are using `mamba`:
-    ```
-    $ mamba deactivate
-    ```
-3. Regenerate the `conda-lock.yml`:
    ```
-   $ conda-lock -f environment.yml -f dev-environment.yml
+   $ mamba deactivate
    ```
-4. Reinstall the virtual environment:
+3. Reinstall the virtual environment:
     ```
-    $ conda update -f environment.yml -f dev-environment.yml -p venv
+    $ conda env update -f environment.yml -f dev-environment.yml -p venv
     ```
    or, if you are using `mamba`:
     ```
-    $ mamba update -f environment.yml -f dev-environment.yml -p venv
+    $ mamba env update -f environment.yml -f dev-environment.yml -p venv
     ```
 5. 
 
@@ -69,6 +65,7 @@ When you want to add/upgrade packages **for release**
     or
     ```
     $ mamba activate ./venv
+    ```
 3. Start the Jupyter Notebook server
     ```
     $ jupyter notebook --no-browser --notebook-dir=notebook
