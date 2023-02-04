@@ -20,11 +20,11 @@ as the python pacakge manager.
     ```
 3. Install virtual environment
     ```
-    $ conda env update -f environment.yml -f dev-environment.yml -p venv
+    $ conda env update -f environment.yml -p venv
     ```
    or, if you are using `mamba`:
     ```
-    $ mamba env update -f environment.yml -f dev-environment.yml -p venv
+    $ mamba env update -f environment.yml -p venv
     ```
 4. Activate the virtual environment
     ```
@@ -47,11 +47,11 @@ When you want to add/upgrade packages **for release**
    ```
 3. Reinstall the virtual environment:
     ```
-    $ conda env update -f environment.yml -f dev-environment.yml -p venv
+    $ conda env update -f environment.yml -p venv
     ```
    or, if you are using `mamba`:
     ```
-    $ mamba env update -f environment.yml -f dev-environment.yml -p venv
+    $ mamba env update -f environment.yml -p venv
     ```
 5. 
 
@@ -75,9 +75,9 @@ When you want to add/upgrade packages **for release**
 If you want to add packages temporarily just for playground, 
 can simply run
 ```
-$ conda instal -c conda-forge <my-package>
+$ conda instal <my-package>
 ```
 or, if you are using `mamba`:
 ```
-$ mamba instal -c conda-forge <my-package>
+$ mamba instal <my-package>
 ```
