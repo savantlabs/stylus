@@ -1,0 +1,18 @@
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pytest
+  - pip
+  - pip:
+      - pytest-pythonpath
+      - pytest-cov
+      - pytest-xdist
+category: dev
+platforms:
+  - linux-64
+  - osx-64
+  - win-64
+  - osx-arm64  # For Apple Silicon, e.g. M1/M2
+  - linux-aarch64  # aka arm64, use for Docker on Apple Silicon
+  - linux-ppc64le
