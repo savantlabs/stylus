@@ -3,11 +3,9 @@ channels:
   - defaults
 dependencies:
   - pytest
+  - pytest-cov
+  - pytest-xdist
   - pip
-  - pip:
-      - pytest-pythonpath
-      - pytest-cov
-      - pytest-xdist
 category: dev
 platforms:
   - linux-64
