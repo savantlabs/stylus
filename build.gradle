@@ -40,6 +40,7 @@ subprojects {
         implementation platform(project(":bom"))
       }
     }
+
     test {
       jvmArgs = [
               "-Duser.timezone=UTC",

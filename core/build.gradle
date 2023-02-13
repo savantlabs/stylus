@@ -1,4 +1,8 @@
 dependencies {
+    api platform(project(":bom"))
     api "org.slf4j:slf4j-api"
-    implementation "org.springframework.retry:spring-retry"
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.commons:commons-collections4'
+    implementation 'commons-io:commons-io'
+    api "org.springframework.retry:spring-retry"
 }
