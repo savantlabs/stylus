@@ -3,14 +3,12 @@ package io.savantlabs.stylus.sdk.jupyter;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
 public class JupyterClientImpl implements JupyterClient {
 
   @NonNull private final URI httpUri;
