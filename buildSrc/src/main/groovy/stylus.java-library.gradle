@@ -6,8 +6,6 @@ plugins {
 }
 
 dependencies {
-    // test dependencies
-    testImplementation project(":test")
     // Use JUnit Jupiter Engine
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 }
