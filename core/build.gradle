@@ -1,8 +1,27 @@
+def var undertowVer = "2.3.4.Final"
+
 dependencies {
     api platform(project(":bom"))
     api "org.slf4j:slf4j-api"
+
+    // common
     implementation 'org.apache.commons:commons-lang3'
     implementation 'org.apache.commons:commons-collections4'
     implementation 'commons-io:commons-io'
-    api "org.springframework.retry:spring-retry"
+
+    // jakarta
+    compileOnly 'jakarta.inject:jakarta.inject-api'
+    compileOnly 'jakarta.annotation:jakarta.annotation-api'
+
+    // jackson
+    api "com.fasterxml.jackson.core:jackson-databind"
+    runtimeOnly "com.fasterxml.jackson.core:jackson-core"
+    runtimeOnly "com.fasterxml.jackson.core:jackson-annotations"
+
+    api "com.squareup.okhttp3:okhttp"
+    implementation "org.springframework.retry:spring-retry"
+
+    // test
+    testImplementation "io.undertow:undertow-core:${undertowVer}"
+    testImplementation "io.undertow:undertow-servlet:${undertowVer}"
 }
