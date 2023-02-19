@@ -1,6 +1,7 @@
 package io.savantlabs.stylus.sdk.jupyter;
 
 import java.net.URI;
+import java.sql.SQLOutput;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +35,7 @@ public class JupyterProcess {
                   if (!stopPipe) {
                     pipe.push(line);
                   }
+//                  pipe.push(line);
                 },
             (p) ->
                 (line) -> {
@@ -41,8 +43,18 @@ public class JupyterProcess {
                   if (!stopPipe) {
                     pipe.push(line);
                   }
+//                  pipe.push(line);
                 },
             "start_jupyter.sh");
+
+    if(pipe.isEmpty())
+    {
+      System.out.println("hi!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+    for (String line : pipe)
+    {
+      System.out.println("Printing....."+line);
+    }
     log.info("Started the jupyter process {} ...", process.pid());
     shutdownHook = new Thread(this::stop);
     Runtime.getRuntime().addShutdownHook(shutdownHook);
