@@ -18,7 +18,9 @@ dependencies {
     runtimeOnly "com.fasterxml.jackson.core:jackson-core"
     runtimeOnly "com.fasterxml.jackson.core:jackson-annotations"
 
-    api "com.squareup.okhttp3:okhttp"
+    implementation "com.squareup.okhttp3:okhttp"
+    // implementation "org.springframework:spring-websocket"
+    // implementation "org.springframework:spring-messaging"
     implementation "org.springframework.retry:spring-retry"
 
     // test
