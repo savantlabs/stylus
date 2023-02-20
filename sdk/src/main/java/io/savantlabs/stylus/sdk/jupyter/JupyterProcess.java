@@ -1,10 +1,9 @@
 package io.savantlabs.stylus.sdk.jupyter;
 
 import java.net.URI;
-import java.sql.SQLOutput;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -16,14 +15,14 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 public class JupyterProcess {
 
+  private static final Pattern JUPYTER_PID_PATTERN = Pattern.compile("^JUPYTER_PID=(?<pid>\\d+)$");
+
   @NonNull private Process process;
 
+  private final Object jupyterPIDMutex = new Object();
   private long jupyterPID = -1;
-  private boolean stopPipe; // do not save messages in the queue
   private Thread shutdownHook;
   private boolean stopped;
-
-  private final Deque<String> pipe = new LinkedList<>();
 
   @SneakyThrows
   public JupyterProcess() {
@@ -32,33 +31,32 @@ public class JupyterProcess {
             (p) ->
                 (line) -> {
                   log.info("jupyter process [{}]: {}", p.pid(), line);
-                  if (!stopPipe) {
-                    pipe.push(line);
+                  if (jupyterPID < 0) {
+                    Matcher matcher = JUPYTER_PID_PATTERN.matcher(line);
+                    if (matcher.matches()) {
+                      jupyterPID = Long.parseLong(matcher.group("pid"));
+                      log.info("Found jupyter pid from console output: {}", jupyterPID);
+                      synchronized (jupyterPIDMutex) {
+                        jupyterPIDMutex.notify();
+                      }
+                    }
                   }
-//                  pipe.push(line);
                 },
             (p) ->
                 (line) -> {
                   log.warn("jupyter process [{}]: {}", p.pid(), line);
-                  if (!stopPipe) {
-                    pipe.push(line);
-                  }
-//                  pipe.push(line);
                 },
             "start_jupyter.sh");
 
-    if(pipe.isEmpty())
-    {
-      System.out.println("hi!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    }
-    for (String line : pipe)
-    {
-      System.out.println("Printing....."+line);
-    }
     log.info("Started the jupyter process {} ...", process.pid());
     shutdownHook = new Thread(this::stop);
     Runtime.getRuntime().addShutdownHook(shutdownHook);
-    // TODO: extract JUPYTER_PID from `pipe`, which is useful when stopping the process
+    if (jupyterPID < 0) {
+      synchronized (jupyterPIDMutex) {
+        jupyterPIDMutex.wait(TimeUnit.MINUTES.toMillis(1));
+      }
+    }
+    log.info("Jupyter client is fully initialized.");
   }
 
   @SneakyThrows
@@ -91,12 +89,6 @@ public class JupyterProcess {
     // TODO: read `pipe`, find http uri, then clear the pipe,
     // TODO: throw IllegalStateException if cannot find the uri after timeout (milliseconds)
     // TODO: stop persisting further messages
-    stopPersistingMessages();
     return URI.create("http://localhost");
-  }
-
-  private void stopPersistingMessages() {
-    pipe.clear();
-    stopPipe = false;
   }
 }
