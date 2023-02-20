@@ -56,6 +56,9 @@ public class JupyterProcess {
         jupyterPIDMutex.wait(TimeUnit.MINUTES.toMillis(1));
       }
     }
+    if (jupyterPID < 0) {
+      throw new IllegalStateException("Failed to start the jupyter process");
+    }
     log.info("Jupyter client is fully initialized.");
   }
 

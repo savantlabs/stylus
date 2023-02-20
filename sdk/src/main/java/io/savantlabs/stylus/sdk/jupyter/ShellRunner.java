@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +40,15 @@ class ShellRunner {
           errStreamConsumerProvider.apply(process));
       return process;
     } finally {
-      FileUtils.deleteQuietly(new File(path));
+      new Timer()
+          .schedule(
+              new TimerTask() {
+                @Override
+                public void run() {
+                  FileUtils.deleteQuietly(new File(path));
+                }
+              },
+              TimeUnit.MILLISECONDS.toMillis(500));
     }
   }
 
