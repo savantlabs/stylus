@@ -20,7 +20,6 @@ public class JupyterClientImpl implements JupyterClient {
     process = new JupyterProcess();
     httpUri = process.extractServerUri(TimeUnit.MINUTES.toMillis(1));
   }
-
   @Override
   public void stop() {
     process.stop();
