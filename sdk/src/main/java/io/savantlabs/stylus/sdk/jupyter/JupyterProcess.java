@@ -2,6 +2,7 @@ package io.savantlabs.stylus.sdk.jupyter;
 
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
@@ -16,16 +17,23 @@ import lombok.extern.slf4j.Slf4j;
 public class JupyterProcess {
 
   private static final Pattern JUPYTER_PID_PATTERN = Pattern.compile("^JUPYTER_PID=(?<pid>\\d+)$");
+  private static final Pattern JUPYTER_URL = Pattern.compile("(?<url>http:\\/\\/[a-zA-Z0-9]+:[0-9]{1,5}\\/\\?token=[a-zA-Z0-9]+)");
 
+  private static final Pattern temp = Pattern.compile(".*Jupyter Notebook.*is running at:");
   @NonNull private Process process;
 
   private final Object jupyterPIDMutex = new Object();
   private long jupyterPID = -1;
+  private String jupyterURL = "";
   private Thread shutdownHook;
   private boolean stopped;
 
+  public String GetJupyterURL(){
+    return jupyterURL;
+  }
   @SneakyThrows
   public JupyterProcess() {
+    AtomicBoolean found_url = new AtomicBoolean(false);
     process =
         ShellRunner.runScript(
             (p) ->
@@ -45,6 +53,20 @@ public class JupyterProcess {
             (p) ->
                 (line) -> {
                   log.warn("jupyter process [{}]: {}", p.pid(), line);
+                  Matcher matcher = temp.matcher(line);
+                  if(matcher.matches()){
+                  //if(line.contains("Jupyter Notebook") && line.endsWith("is running at:")){
+                    //set found_url to true since next line will be containing url
+                    found_url.set(true);
+                  }else if(found_url.get()){
+                    //found the line containing the url
+                    matcher = JUPYTER_URL.matcher(line);
+                    if (matcher.find()) {
+                      jupyterURL = matcher.group("url");
+                      log.info("Jupyter URL from console output: {}",jupyterURL);
+                      found_url.set(false);
+                    }
+                  }
                 },
             "start_jupyter.sh");
 
@@ -92,3 +114,4 @@ public class JupyterProcess {
     return URI.create("http://localhost");
   }
 }
+
