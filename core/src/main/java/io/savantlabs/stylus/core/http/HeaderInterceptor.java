@@ -24,11 +24,14 @@ public class HeaderInterceptor implements Interceptor {
   private final Map<String, String> headerMap;
   private final Function<Map<String, String>, Map<String, String>> modifier;
 
-  public HeaderInterceptor(Function<Map<String, String>, Map<String, String>> modifier) {
+  HeaderInterceptor() {
+    this(DEFAULT_HEADERS, Function.identity());
+  }
+  HeaderInterceptor(Function<Map<String, String>, Map<String, String>> modifier) {
     this(DEFAULT_HEADERS, modifier);
   }
 
-  public HeaderInterceptor(
+  HeaderInterceptor(
       Map<String, String> headerMap, Function<Map<String, String>, Map<String, String>> modifier) {
     this.headerMap = Map.copyOf(headerMap);
     this.modifier = modifier;

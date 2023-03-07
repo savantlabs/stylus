@@ -1,10 +1,12 @@
 package io.savantlabs.stylus.core.http;
 
+import static io.undertow.Handlers.websocket;
 import static io.undertow.util.Methods.DELETE;
 import static io.undertow.util.Methods.GET;
 import static io.undertow.util.Methods.POST;
 import static io.undertow.util.Methods.PUT;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.savantlabs.stylus.core.util.JsonUtils;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
@@ -14,19 +16,33 @@ import io.undertow.server.handlers.PathHandler;
 import io.undertow.util.HeaderMap;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
+import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
+import io.undertow.websockets.core.AbstractReceiveListener;
+import io.undertow.websockets.core.BufferedBinaryMessage;
+import io.undertow.websockets.core.BufferedTextMessage;
+import io.undertow.websockets.core.WebSocketChannel;
+import io.undertow.websockets.core.WebSockets;
 import java.net.ServerSocket;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 
+@Slf4j
 public class TestHttpServer implements AutoCloseable {
 
   static final String TOKEN = "12345";
 
   private final Undertow server;
   @Getter private final int port;
+
+  final ConcurrentLinkedQueue<JsonNode> jsonMessages = new ConcurrentLinkedQueue<>();
+  final ConcurrentLinkedQueue<JsonNode> binaryMessages = new ConcurrentLinkedQueue<>();
 
   @Override
   public void close() {
@@ -56,7 +72,8 @@ public class TestHttpServer implements AutoCloseable {
                 "/503",
                 getErrorHdlr(
                     StatusCodes.SERVICE_UNAVAILABLE, StatusCodes.SERVICE_UNAVAILABLE_STRING))
-            .addExactPath("/500", get500Hdlr());
+            .addExactPath("/500", get500Hdlr())
+            .addPrefixPath("/ws", getWsHdlr());
     return Undertow.builder().addHttpListener(port, "localhost").setHandler(handler).build();
   }
 
@@ -98,6 +115,38 @@ public class TestHttpServer implements AutoCloseable {
           throw new UnsupportedOperationException(
               exchange.getRequestMethod() + " is not supported at this endpoint.");
         }
+      }
+    };
+  }
+
+  private WebSocketProtocolHandshakeHandler getWsHdlr() {
+    return websocket(
+        (exchange, channel) -> {
+          channel.getReceiveSetter().set(getListener());
+          channel.resumeReceives();
+        });
+  }
+
+  private AbstractReceiveListener getListener() {
+    return new AbstractReceiveListener() {
+      @Override
+      protected void onFullTextMessage(WebSocketChannel channel, BufferedTextMessage message) {
+        String messageData = message.getData();
+        log.info("On text message: {}", messageData);
+        jsonMessages.offer(JsonUtils.deserialize(messageData, JsonNode.class));
+        for (WebSocketChannel session : channel.getPeerConnections()) {
+          WebSockets.sendText(messageData, session, null);
+        }
+      }
+
+      @Override
+      protected void onFullBinaryMessage(WebSocketChannel channel, BufferedBinaryMessage message) {
+        ByteBuffer[] buffers = message.getData().getResource();
+        ByteBuffer buffer = WebSockets.mergeBuffers(buffers);
+        String str = new String(buffer.array(), StandardCharsets.UTF_8);
+        log.info("On binary message: {}", str);
+        binaryMessages.offer(JsonUtils.deserialize(str, JsonNode.class));
+        WebSockets.sendBinary(buffer, channel, null);
       }
     };
   }
