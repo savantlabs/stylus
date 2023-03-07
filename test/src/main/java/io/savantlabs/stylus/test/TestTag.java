@@ -1,4 +1,4 @@
-package io.savantlabs.stylus.test.util;
+package io.savantlabs.stylus.test;
 
 import lombok.experimental.UtilityClass;
 
