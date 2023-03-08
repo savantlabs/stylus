@@ -17,9 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 public class JupyterProcess {
 
   private static final Pattern JUPYTER_PID_PATTERN = Pattern.compile("^JUPYTER_PID=(?<pid>\\d+)$");
-  private static final Pattern JUPYTER_URL = Pattern.compile("(?<url>http:\\/\\/[a-zA-Z0-9]+:[0-9]{1,5}\\/\\?token=[a-zA-Z0-9]+)");
-
-  private static final Pattern temp = Pattern.compile(".*Jupyter Notebook.*is running at:");
+  private static final Pattern JUPYTER_URL_HINT =
+      Pattern.compile(".*Jupyter Notebook.*is running at:");
+  private static final Pattern JUPYTER_URL =
+      Pattern.compile("(?<url>http:\\/\\/[a-zA-Z0-9]+:[0-9]{1,5}\\/\\?token=[a-zA-Z0-9]+)");
   @NonNull private Process process;
 
   private final Object jupyterPIDMutex = new Object();
@@ -28,9 +29,10 @@ public class JupyterProcess {
   private Thread shutdownHook;
   private boolean stopped;
 
-  public String GetJupyterURL(){
+  public String GetJupyterURL() {
     return jupyterURL;
   }
+
   @SneakyThrows
   public JupyterProcess() {
     AtomicBoolean found_url = new AtomicBoolean(false);
@@ -53,17 +55,17 @@ public class JupyterProcess {
             (p) ->
                 (line) -> {
                   log.warn("jupyter process [{}]: {}", p.pid(), line);
-                  Matcher matcher = temp.matcher(line);
-                  if(matcher.matches()){
-                  //if(line.contains("Jupyter Notebook") && line.endsWith("is running at:")){
-                    //set found_url to true since next line will be containing url
+                  Matcher matcher = JUPYTER_URL_HINT.matcher(line);
+                  if (matcher.matches()) {
+                    // if(line.contains("Jupyter Notebook") && line.endsWith("is running at:")){
+                    // set found_url to true since next line will be containing url
                     found_url.set(true);
-                  }else if(found_url.get()){
-                    //found the line containing the url
+                  } else if (found_url.get()) {
+                    // found the line containing the url
                     matcher = JUPYTER_URL.matcher(line);
                     if (matcher.find()) {
                       jupyterURL = matcher.group("url");
-                      log.info("Jupyter URL from console output: {}",jupyterURL);
+                      log.info("Jupyter URL from console output: {}", jupyterURL);
                       found_url.set(false);
                     }
                   }
@@ -114,4 +116,3 @@ public class JupyterProcess {
     return URI.create("http://localhost");
   }
 }
-
