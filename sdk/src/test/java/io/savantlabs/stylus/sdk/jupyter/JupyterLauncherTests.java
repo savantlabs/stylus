@@ -38,6 +38,7 @@ public class JupyterLauncherTests {
 
     JupyterClient client = JupyterLauncher.createClient();
     Thread.sleep(5000);
+    Assertions.assertNotNull(((JupyterClientImpl) client).getJupyterURL());
     client.stop();
 
 
