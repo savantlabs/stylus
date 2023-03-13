@@ -16,19 +16,13 @@ public class JupyterClientImpl implements JupyterClient {
 
   @Getter(AccessLevel.NONE)
   private final JupyterProcess process;
-  private String jupyterURL = "";
-
-  public String getJupyterURL(){
-    return jupyterURL;
-  }
 
   @SneakyThrows
   JupyterClientImpl() {
     process = new JupyterProcess();
-    Thread.sleep(5000);
-    jupyterURL = process.getURL();
     httpUri = process.extractServerUri(TimeUnit.MINUTES.toMillis(1));
   }
+
   @Override
   public void stop() {
     process.stop();

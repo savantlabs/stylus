@@ -30,7 +30,6 @@ class ShellRunner {
     String path = writeTempScripts(scriptFile);
     try {
       ProcessBuilder builder = new ProcessBuilder();
-
       builder.command("/bin/bash", path);
       Process process = builder.start();
       pipeStreams(
@@ -39,7 +38,13 @@ class ShellRunner {
           errStreamConsumerProvider.apply(process));
       return process;
     } finally {
-      //FileUtils.deleteQuietly(new File(path));
+      Thread hook =
+          new Thread(
+              () -> {
+                log.info("Deleting temporary script file {}", path);
+                FileUtils.deleteQuietly(new File(path));
+              });
+      Runtime.getRuntime().addShutdownHook(hook);
     }
   }
 
@@ -51,10 +56,12 @@ class ShellRunner {
     ProcessBuilder builder = new ProcessBuilder();
     builder.command(command);
     Process process = builder.start();
-    pipeStreams(process, outStreamConsumerProvider.apply(process), errStreamConsumerProvider.apply(process));
+    pipeStreams(
+        process,
+        outStreamConsumerProvider.apply(process),
+        errStreamConsumerProvider.apply(process));
     return process;
   }
-
 
   @SneakyThrows
   static Process runCommand(String... command) {
