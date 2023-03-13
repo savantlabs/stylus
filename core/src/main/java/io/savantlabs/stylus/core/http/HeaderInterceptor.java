@@ -27,6 +27,7 @@ public class HeaderInterceptor implements Interceptor {
   HeaderInterceptor() {
     this(DEFAULT_HEADERS, Function.identity());
   }
+
   HeaderInterceptor(Function<Map<String, String>, Map<String, String>> modifier) {
     this(DEFAULT_HEADERS, modifier);
   }
