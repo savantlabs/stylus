@@ -12,6 +12,9 @@ name: PR Test
 on:
   pull_request:
     types: [ opened, reopened ]
+    
+env:
+  IS_GITHUB_RUNNER: true
 
 jobs:
   build:
