@@ -10,6 +10,8 @@
 name: PR Test
 
 on:
+  workflow_dispatch:
+    types: *
   pull_request:
     types: [ opened, reopened ]
 
