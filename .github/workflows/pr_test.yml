@@ -19,16 +19,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-activate-base: true
-          activate-environment: ""
-      - name: Conda info
+      - name: Setup MicroMamba
+        uses: mamba-org/provision-with-micromamba@main
+      - name: MicroMamba info
         shell: bash -el {0}
-        run: conda info
-      - name: Conda list
-        shell: pwsh
-        run: pushd canvas && conda env update -f environment.yml -p ./venv && popd
+        run: micromamba info
+      - name: Install conda environment
+        shell: bash -el {0}
+        run: pushd canvas && micromamba update -f environment.yml -p ./venv && popd
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
