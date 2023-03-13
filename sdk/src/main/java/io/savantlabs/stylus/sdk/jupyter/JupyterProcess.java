@@ -2,6 +2,7 @@ package io.savantlabs.stylus.sdk.jupyter;
 
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +11,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 @Getter
@@ -26,16 +28,14 @@ public class JupyterProcess {
   private final Object jupyterPIDMutex = new Object();
   private long jupyterPID = -1;
   private String jupyterURL = "";
+
+  private final Object jupyterURLMutex = new Object();
   private Thread shutdownHook;
   private boolean stopped;
 
-  public String getURL() {
-    return jupyterURL;
-  }
-
   @SneakyThrows
   public JupyterProcess() {
-    AtomicBoolean found_url = new AtomicBoolean(false);
+    AtomicBoolean next_line_is_url = new AtomicBoolean(false);
     process =
         ShellRunner.runScript(
             (p) ->
@@ -57,16 +57,18 @@ public class JupyterProcess {
                   log.warn("jupyter process [{}]: {}", p.pid(), line);
                   Matcher matcher = JUPYTER_URL_HINT.matcher(line);
                   if (matcher.matches()) {
-                    // if(line.contains("Jupyter Notebook") && line.endsWith("is running at:")){
-                    // set found_url to true since next line will be containing url
-                    found_url.set(true);
-                  } else if (found_url.get()) {
+                    // the next line will be containing the url
+                    next_line_is_url.set(true);
+                  } else if (next_line_is_url.get()) {
                     // found the line containing the url
                     matcher = JUPYTER_URL.matcher(line);
                     if (matcher.find()) {
                       jupyterURL = matcher.group("url");
                       log.info("Jupyter URL from console output: {}", jupyterURL);
-                      found_url.set(false);
+                      next_line_is_url.set(false);
+                      synchronized (jupyterURLMutex) {
+                        jupyterURLMutex.notify();
+                      }
                     }
                   }
                 },
@@ -109,10 +111,23 @@ public class JupyterProcess {
     }
   }
 
-  URI extractServerUri(long timeout) {
-    // TODO: read `pipe`, find http uri, then clear the pipe,
-    // TODO: throw IllegalStateException if cannot find the uri after timeout (milliseconds)
-    // TODO: stop persisting further messages
-    return URI.create("http://localhost");
+  URI extractServerUri(long timeout) throws TimeoutException {
+    if (StringUtils.isBlank(jupyterURL)) {
+      long startTime = System.currentTimeMillis();
+      synchronized (jupyterURLMutex) {
+        while (StringUtils.isBlank(jupyterURL)
+            && System.currentTimeMillis() - startTime < timeout) {
+          try {
+            jupyterURLMutex.wait(timeout);
+          } catch (InterruptedException e) {
+            log.warn("Waiting is interrupted", e);
+          }
+        }
+        if (StringUtils.isBlank(jupyterURL)) {
+          throw new TimeoutException("Failed to detect jupyter server URL within the timeout.");
+        }
+      }
+    }
+    return URI.create(jupyterURL);
   }
 }

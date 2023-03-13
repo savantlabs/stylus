@@ -47,6 +47,4 @@ public interface ApiProxy {
    * @param <R>
    */
   <R> R delete(String path, Class<R> returnType);
-
-
 }
