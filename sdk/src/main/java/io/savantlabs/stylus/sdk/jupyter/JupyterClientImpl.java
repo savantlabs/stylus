@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 @Getter
 @Setter
@@ -15,9 +16,17 @@ public class JupyterClientImpl implements JupyterClient {
 
   @Getter(AccessLevel.NONE)
   private final JupyterProcess process;
+  private String jupyterURL = "";
 
+  public String getJupyterURL(){
+    return jupyterURL;
+  }
+
+  @SneakyThrows
   JupyterClientImpl() {
     process = new JupyterProcess();
+    Thread.sleep(5000);
+    jupyterURL = process.getURL();
     httpUri = process.extractServerUri(TimeUnit.MINUTES.toMillis(1));
   }
   @Override

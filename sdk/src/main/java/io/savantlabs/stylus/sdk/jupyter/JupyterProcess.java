@@ -29,7 +29,7 @@ public class JupyterProcess {
   private Thread shutdownHook;
   private boolean stopped;
 
-  public String GetJupyterURL() {
+  public String getURL() {
     return jupyterURL;
   }
 
