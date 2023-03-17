@@ -130,4 +130,5 @@ public class JupyterProcess {
     }
     return URI.create(jupyterURL);
   }
+
 }

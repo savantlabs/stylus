@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PKGS=${@:1}
-
+#echo "Install Pkgs "$PKGS
 if [[ ${IS_GITHUB_RUNNER} = "true" ]]; then
   echo "using micromamba ..."
   export MAMBA_EXE="/home/runner/micromamba-bin/micromamba";
@@ -43,4 +43,6 @@ echo "activating conda env ..."
 cd ../canvas
 $CONDA_COMMAND activate ./venv
 echo "Install conda packages: ${PKGS}"
-$CONDA_COMMAND install ${PKGS}
+$CONDA_COMMAND install --y ${PKGS}
+#$CONDA_COMMAND list
+#pwd
