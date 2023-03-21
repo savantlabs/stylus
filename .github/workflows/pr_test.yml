@@ -10,9 +10,10 @@
 name: PR Test
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [ opened, synchronize, reopened ]
-    
+
 env:
   IS_GITHUB_RUNNER: true
 
