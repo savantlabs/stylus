@@ -17,7 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JupyterClientImpl implements JupyterClient {
 
-  @NonNull private final URI httpUri;
+  @NonNull
+  private final URI httpUri;
 
   @Getter(AccessLevel.NONE)
   private final JupyterProcess process;

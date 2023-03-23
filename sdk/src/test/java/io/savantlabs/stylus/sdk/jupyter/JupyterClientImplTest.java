@@ -21,9 +21,12 @@ class JupyterClientImplTest {
     assertFalse(cp.hasPackage(packageName));
     client.installPackage(packageName);
     client.installPackage(packageName);
+    System.out.println(client.listPackage("."));
     assertTrue(cp.hasPackage(packageName));
     client.removePackage(packageName);
     client.removePackage(packageName);
     assertFalse(cp.hasPackage(packageName));
+    Thread.sleep(3000);
+    client.stop();
   }
 }
