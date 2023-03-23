@@ -26,7 +26,7 @@ public class JupyterClientImpl implements JupyterClient {
   @SneakyThrows
   JupyterClientImpl() {
     process = new JupyterProcess();
-    httpUri = process.extractServerUri(TimeUnit.MINUTES.toMillis(1));
+    httpUri = process.extractServerUri(TimeUnit.MINUTES.toMillis(3));
   }
 
   @Override
