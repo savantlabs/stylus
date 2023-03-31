@@ -1,8 +1,14 @@
 package io.savantlabs.stylus.sdk.jupyter;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.savantlabs.stylus.core.http.ApiProxy;
+import io.savantlabs.stylus.core.http.ApiProxyFactory;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.AccessLevel;
@@ -22,11 +28,16 @@ public class JupyterClientImpl implements JupyterClient {
 
   @Getter(AccessLevel.NONE)
   private final JupyterProcess process;
+  private URI jupyterURL;
+  private String tokenQuery;
+  private String kernelId = "";
 
   @SneakyThrows
   JupyterClientImpl() {
     process = new JupyterProcess();
     httpUri = process.extractServerUri(TimeUnit.MINUTES.toMillis(3));
+    jupyterURL = httpUri;
+    tokenQuery = jupyterURL.getQuery();
   }
 
   @Override
@@ -86,7 +97,26 @@ public class JupyterClientImpl implements JupyterClient {
     process.waitFor();
     return pkgList;
   }
+  @Override
+  public void startKernel()
+  {
+    int port = jupyterURL.getPort();
 
+    ApiProxy proxy = ApiProxyFactory.buildProxy(URI.create("http://localhost:" + port));
+    JsonNode res = proxy.post("/api/kernels?"+this.tokenQuery,
+        Map.of("name","python3","env","{ \"KERNEL_USERNAME\": \"jovyan\" }"),
+        JsonNode.class);
+    kernelId = res.get("id").textValue();
+    log.info("Kernel Started...");
+  }
+  @Override
+  public JsonNode listKernels(URL jupyterURL)
+  {
+    int port = jupyterURL.getPort();
 
-
+    String tokenQuery = jupyterURL.getQuery();
+    ApiProxy proxy = ApiProxyFactory.buildProxy(URI.create("http://localhost:" + port));
+    JsonNode res = proxy.get("/api/kernels?"+tokenQuery, JsonNode.class);
+    return res;
+  }
 }

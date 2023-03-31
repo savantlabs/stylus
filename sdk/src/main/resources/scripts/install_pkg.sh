@@ -43,6 +43,6 @@ echo "activating conda env ..."
 cd ../canvas
 $CONDA_COMMAND activate ./venv
 echo "Install conda packages: ${PKGS}"
-$CONDA_COMMAND install --y ${PKGS}
+conda install --y ${PKGS}
 #$CONDA_COMMAND list
 #pwd
