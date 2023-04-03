@@ -54,6 +54,10 @@ public class SessionServiceImpl implements SessionService {
     throw new UnsupportedOperationException();
   }
 
+  JupyterClient getJupyterClientForTest() {
+    return getJupyterClient();
+  }
+
   private JupyterClient getJupyterClient() {
     if (clientRef.get() == null) {
       synchronized (clientRef) {
