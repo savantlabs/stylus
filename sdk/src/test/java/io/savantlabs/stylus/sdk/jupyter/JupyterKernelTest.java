@@ -1,73 +1,49 @@
 package io.savantlabs.stylus.sdk.jupyter;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import java.net.URI;
+import java.util.List;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 @Slf4j
-public class JupyterKernelTest
-{
-  private boolean assertFlag(JsonNode res, String kernelId)
-  {
-    boolean flag = false;
-    for(var node: res)
-    {
-      if(node.get("id").textValue().equals(kernelId))
-      {
-        flag = true;
-        break;
-      }
+public class JupyterKernelTest {
+  private boolean assertKernelIdExists(JupyterClient client, String kernelId) {
+    List<JupyterKernel> kernels = client.listKernels();
+    return kernels.stream().anyMatch(k -> kernelId.equals(k.getId()));
+  }
+
+  @Test
+  @SneakyThrows
+  void startStopKernel() {
+    try (JupyterClient client = JupyterLauncher.createClient()) {
+      // kernel started
+      JupyterKernel kernel = client.startKernel();
+      Assertions.assertThat(kernel).isNotNull();
+      final String kernelId = kernel.getId();
+
+      // assert kernel exist
+      Assertions.assertThat(assertKernelIdExists(client, kernelId)).isTrue();
+
+      client.stopKernel(kernelId);
+
+      // assert kernel does not exist
+      Assertions.assertThat(assertKernelIdExists(client, kernelId)).isFalse();
     }
-    return flag;
   }
 
   @Test
   @SneakyThrows
-  void startStopKernel()
-  {
-    JupyterClient client = JupyterLauncher.createClient();
-    URI jupyterURL = ((JupyterClientImpl) client).getHttpUri();
-    JsonNode res = client.listKernels(jupyterURL.toURL());
-    log.info(res.toString());
-
-    // kernel started
-    client.startKernel();
-    String kernelId = ((JupyterClientImpl) client).getKernelId();
-
-    JupyterKernel obj = new JupyterKernel(jupyterURL);
-    res = client.listKernels(jupyterURL.toURL());
-    log.info(res.toString());
-
-    // assert id true
-    boolean flag = assertFlag(res, kernelId);
-
-    Assertions.assertTrue(flag);
-    obj.stopKernel(kernelId);
-    res = client.listKernels(jupyterURL.toURL());
-    log.info(res.toString());
-
-    // assert id false
-    flag = assertFlag(res, kernelId);
-    Assertions.assertFalse(flag);
-    client.stop();
-  }
-
-  @Test
-  @SneakyThrows
-  void startInterruptKernel()
-  {
-    JupyterClient client = JupyterLauncher.createClient();
-    URI jupyterURL = ((JupyterClientImpl) client).getHttpUri();
-    client.startKernel();
-    String kernelId = ((JupyterClientImpl) client).getKernelId();
-    JupyterKernel obj = new JupyterKernel(jupyterURL);
-    JsonNode res = obj.getKernelDetails(kernelId);
-    obj.interruptKernel(kernelId);
-    res = obj.getKernelDetails(kernelId);
-    obj.stopKernel(kernelId);
-    client.stop();
+  void startInterruptKernel() {
+    try (JupyterClient client = JupyterLauncher.createClient()) {
+      JupyterKernel kernel = client.startKernel();
+      Assertions.assertThat(kernel).isNotNull();
+      final String kernelId = kernel.getId();
+      Assertions.assertThat(kernel.getState()).isEqualTo("running");
+      client.interruptKernel(kernelId);
+      JupyterKernel kernel2 = client.getKernel(kernelId);
+      // FIXME: if possible, we want to compare kernel and kernel2
+      client.stopKernel(kernelId);
+    }
   }
 }

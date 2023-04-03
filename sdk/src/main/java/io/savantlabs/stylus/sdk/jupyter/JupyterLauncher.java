@@ -7,9 +7,7 @@ import lombok.experimental.UtilityClass;
 public class JupyterLauncher {
 
   @SneakyThrows
-  public static JupyterClient createClient() {
+  public static synchronized JupyterClient createClient() {
     return new JupyterClientImpl();
   }
-
-
 }
