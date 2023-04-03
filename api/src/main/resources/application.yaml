@@ -1,3 +1,11 @@
+server:
+    servlet:
+        context-path: /api
+    compression:
+        enabled: true
+        min-response-size: 102400
+    port: 8080
+
 spring:
     main:
         banner-mode: off
