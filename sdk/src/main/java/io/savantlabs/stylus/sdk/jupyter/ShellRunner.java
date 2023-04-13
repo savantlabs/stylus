@@ -27,10 +27,19 @@ class ShellRunner {
       Function<Process, Consumer<String>> outStreamConsumerProvider,
       Function<Process, Consumer<String>> errStreamConsumerProvider,
       String scriptFile) {
+    return runScript(outStreamConsumerProvider,errStreamConsumerProvider,scriptFile,"");
+  }
+
+  @SneakyThrows
+  static Process runScript(
+      Function<Process, Consumer<String>> outStreamConsumerProvider,
+      Function<Process, Consumer<String>> errStreamConsumerProvider,
+      String scriptFile, String parameter_list) {
     String path = writeTempScripts(scriptFile);
     try {
       ProcessBuilder builder = new ProcessBuilder();
-      builder.command("/bin/bash", path);
+      builder.command("/bin/bash", path, parameter_list);
+      System.out.println(String.join(" ",builder.command().toArray(new String[0])));
       Process process = builder.start();
       pipeStreams(
           process,
@@ -47,6 +56,7 @@ class ShellRunner {
       Runtime.getRuntime().addShutdownHook(hook);
     }
   }
+
 
   @SneakyThrows
   static Process runCommand(
