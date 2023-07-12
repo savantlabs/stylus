@@ -2,6 +2,7 @@ package io.savantlabs.stylus.core.http;
 
 import io.savantlabs.stylus.core.util.JsonUtils;
 import java.net.URI;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +23,12 @@ public class WsClientImpl implements WsClient {
   private final String baseUri;
   private final WsListener listener;
 
-  WsClientImpl(URI baseUri, WsListener listener) {
+
+  public WsClientImpl(URI baseUri, WsListener listener) {
     this.baseUri = baseUri.toString();
     this.listener = listener;
     connect();
+    log.info("Connection Established");
   }
 
   @Override

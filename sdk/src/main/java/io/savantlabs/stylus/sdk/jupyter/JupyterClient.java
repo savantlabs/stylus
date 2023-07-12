@@ -1,6 +1,8 @@
 package io.savantlabs.stylus.sdk.jupyter;
 
+import java.net.URI;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 public interface JupyterClient extends AutoCloseable {
 
@@ -23,4 +25,5 @@ public interface JupyterClient extends AutoCloseable {
   JupyterKernel getKernel(String kernelId);
 
   List<JupyterKernel> listKernels();
+  int executePythonCode(String code, String kernelId) throws InterruptedException, TimeoutException;
 }

@@ -1,10 +1,11 @@
 package io.savantlabs.stylus.sdk.jupyter;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+
+import java.net.URI;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class JupyterClientImplTest {
 
@@ -23,4 +24,15 @@ class JupyterClientImplTest {
       assertFalse(client.hasPackage(packageName));
     }
   }
+  @Test
+  @SneakyThrows
+  void checkExecutePythonCode() throws InterruptedException {
+    JupyterClient client = JupyterLauncher.createClient();
+    JupyterKernel kernel = client.startKernel();
+    final String kernelId = kernel.getId();
+    String code = "1 + 1";
+    int check = client.executePythonCode(code, kernelId);
+    assertEquals(2, check);
+  }
+
 }
