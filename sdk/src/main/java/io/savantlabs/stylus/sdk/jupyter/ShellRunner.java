@@ -20,7 +20,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 @Slf4j
 @UtilityClass
-class ShellRunner {
+public class ShellRunner {
 
   @SneakyThrows
   static Process runScript(
@@ -74,7 +74,7 @@ class ShellRunner {
   }
 
   @SneakyThrows
-  static Process runCommand(String... command) {
+  public static Process runCommand(String... command) {
     ProcessBuilder builder = new ProcessBuilder();
     builder.command(command);
     Process process = builder.start();

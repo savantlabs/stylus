@@ -33,7 +33,7 @@ public class JupyterClientImpl implements JupyterClient {
   private volatile ApiProxy apiProxy;
 
   @SneakyThrows
-  JupyterClientImpl() {
+  public JupyterClientImpl() {
     process = new JupyterProcess();
     httpUri = process.extractServerUri(TimeUnit.MINUTES.toMillis(3));
     jupyterURL = httpUri;

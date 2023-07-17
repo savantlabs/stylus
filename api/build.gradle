@@ -28,3 +28,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testAnnotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
+
+springBoot {
+    mainClass.value("io.savantlabs.stylus.api.StylusApplication")
+}

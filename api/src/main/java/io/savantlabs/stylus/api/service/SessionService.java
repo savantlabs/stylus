@@ -20,7 +20,7 @@ public interface SessionService {
   // >>>>> kernel management >>>>>
 
   // should return JupyterKernel, after merging Test2
-  Object startSessionKernel(String sessionId);
+  Object startSessionKernel(String sessionId) throws InterruptedException;
 
   // <<<<< kernel management <<<<<
 
