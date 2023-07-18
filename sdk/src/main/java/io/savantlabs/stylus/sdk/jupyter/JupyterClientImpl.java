@@ -109,7 +109,9 @@ public class JupyterClientImpl implements JupyterClient {
 //    WebSocket webSocket = client.newWebSocket(request, webSocketListener);
 //    latch.await();
 //    return ans;
-    URI endpointUri = URI.create(httpUri.toString() + "/api/kernels/" + kernelId + "/channels");
+    String wsUrl = httpUri.toString().replaceFirst("http://", "wss://");
+    URI endpointUri = URI.create(wsUrl + "/api/kernels/" + kernelId + "/channels");
+    log.info(endpointUri.toString());
     WsListenerImpl listener = new WsListenerImpl();
     WsClientImpl wsClient = new WsClientImpl(endpointUri, listener);
     Map<String, Object> executeRequestContent = new HashMap<>();

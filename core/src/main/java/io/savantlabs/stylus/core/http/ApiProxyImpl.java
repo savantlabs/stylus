@@ -29,6 +29,7 @@ public class ApiProxyImpl implements ApiProxy {
 
   @Override
   public <R> R get(String path, Class<R> returnType) {
+
     Request request = buildReq(path).get().build();
     return execute(request, returnType);
   }

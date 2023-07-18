@@ -1,5 +1,8 @@
 package io.savantlabs.stylus.sdk.jupyter;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.savantlabs.stylus.core.http.ApiProxy;
+import io.savantlabs.stylus.core.util.JsonUtils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
@@ -34,5 +37,11 @@ class JupyterClientImplTest {
     int check = client.executePythonCode(code, kernelId);
     assertEquals(2, check);
   }
-
+  @Test
+  @SneakyThrows
+  void extractWsURL() throws InterruptedException {
+    JupyterClient client = JupyterLauncher.createClient();
+    JupyterKernel kernel = client.startKernel();
+    client.listKernels();
+  }
 }
