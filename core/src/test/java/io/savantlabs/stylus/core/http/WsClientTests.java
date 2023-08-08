@@ -144,6 +144,11 @@ public class WsClientTests {
                 }
               }
             }
+
+            @Override
+            public void onResponse(String response) {
+              System.out.println("No implementation");
+            }
           };
       client = WsClientFactory.buildClient(serverUri, listener);
     }

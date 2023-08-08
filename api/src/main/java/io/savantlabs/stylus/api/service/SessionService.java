@@ -16,7 +16,6 @@ public interface SessionService {
 
   // <<<<< session management <<<<<
 
-
   // >>>>> kernel management >>>>>
 
   // should return JupyterKernel, after merging Test2

@@ -90,7 +90,9 @@ public class ApiProxyImpl implements ApiProxy {
   }
 
   private Request.Builder buildReq(String path) {
-    HttpUrl url = HttpUrl.get(getUrl(path));
+    String urlval = getUrl(path);
+    // http://localhost:8927/api/kernels?token=8b48d161eccdf77530d1a174e8c3173c8f10b38a7e440da9
+    HttpUrl url = HttpUrl.get(urlval);
     return new Request.Builder().url(url);
   }
 

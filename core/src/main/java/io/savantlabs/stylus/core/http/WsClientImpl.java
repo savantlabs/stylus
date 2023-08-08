@@ -2,7 +2,6 @@ package io.savantlabs.stylus.core.http;
 
 import io.savantlabs.stylus.core.util.JsonUtils;
 import java.net.URI;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ public class WsClientImpl implements WsClient {
   private final AtomicReference<WebSocket> webSocket = new AtomicReference<>();
   private final String baseUri;
   private final WsListener listener;
-
 
   public WsClientImpl(URI baseUri, WsListener listener) {
     this.baseUri = baseUri.toString();

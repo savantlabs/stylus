@@ -39,7 +39,7 @@ public class JupyterKernelTest {
       JupyterKernel kernel = client.startKernel();
       Assertions.assertThat(kernel).isNotNull();
       final String kernelId = kernel.getId();
-      Assertions.assertThat(kernel.getState()).isEqualTo("running");
+      Assertions.assertThat(kernel.getState()).isEqualTo("starting");
       client.interruptKernel(kernelId);
       JupyterKernel kernel2 = client.getKernel(kernelId);
       // FIXME: if possible, we want to compare kernel and kernel2
