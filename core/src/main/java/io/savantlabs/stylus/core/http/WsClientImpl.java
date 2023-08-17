@@ -22,7 +22,7 @@ public class WsClientImpl implements WsClient {
   private final String baseUri;
   private final WsListener listener;
 
-  WsClientImpl(URI baseUri, WsListener listener) {
+  public WsClientImpl(URI baseUri, WsListener listener) {
     this.baseUri = baseUri.toString();
     this.listener = listener;
     connect();
@@ -72,6 +72,7 @@ public class WsClientImpl implements WsClient {
       @SneakyThrows
       public void onOpen(@NotNull WebSocket webSocket, @NotNull Response response) {
         super.onOpen(webSocket, response);
+        log.info("WebSocket connection opened");
         log.info(
             "On open - {}: {}",
             response.code(),
@@ -106,6 +107,7 @@ public class WsClientImpl implements WsClient {
       public void onFailure(
           @NotNull WebSocket webSocket, @NotNull Throwable t, @Nullable Response response) {
         super.onFailure(webSocket, t, response);
+        log.warn("WebSocket connection failed", t);
         log.warn("On failure, reconnect ...", t);
         connect();
       }

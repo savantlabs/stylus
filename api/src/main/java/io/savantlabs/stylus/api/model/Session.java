@@ -16,8 +16,7 @@ public class Session {
   String id;
   String kernelId;
 
-  public Session(String id, String kernelId)
-  {
+  public Session(String id, String kernelId) {
     this.id = id;
     this.kernelId = kernelId;
   }

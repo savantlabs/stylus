@@ -29,6 +29,7 @@ public class ApiProxyImpl implements ApiProxy {
 
   @Override
   public <R> R get(String path, Class<R> returnType) {
+
     Request request = buildReq(path).get().build();
     return execute(request, returnType);
   }
@@ -89,7 +90,9 @@ public class ApiProxyImpl implements ApiProxy {
   }
 
   private Request.Builder buildReq(String path) {
-    HttpUrl url = HttpUrl.get(getUrl(path));
+    String urlval = getUrl(path);
+    // http://localhost:8927/api/kernels?token=8b48d161eccdf77530d1a174e8c3173c8f10b38a7e440da9
+    HttpUrl url = HttpUrl.get(urlval);
     return new Request.Builder().url(url);
   }
 

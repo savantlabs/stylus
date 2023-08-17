@@ -7,4 +7,6 @@ public interface WsListener {
   void onText(String text);
 
   void onBinary(ByteString bytes);
+
+  void onResponse(String response);
 }
